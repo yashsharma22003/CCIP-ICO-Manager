@@ -19,6 +19,8 @@ contract Ico is Ownable {
         fundRecipient = _fundRecipient;
     }
 
+    
+
     receive() external payable {
         require(block.timestamp >= start && block.timestamp <= end, "ICO not active");
         require(msg.value > 0, "Zero ETH sent");
