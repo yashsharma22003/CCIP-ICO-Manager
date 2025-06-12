@@ -2,7 +2,7 @@
 const { ethers } = require("hardhat");
 
 
-async function main(registryModuleOwnerCustom, tokenAdminRegistryAddress, tokenAddress) {
+async function main() {
 
   const abi = [
     {
@@ -637,20 +637,22 @@ async function main(registryModuleOwnerCustom, tokenAdminRegistryAddress, tokenA
     }
   ];
 
-  const registryModuleOwnerCustom = "0x62e731218d0D47305aba2BE3751E7EE9E5520790";
-  const tokenAdminRegistryAddress = "0x95F29FEE11c5C55d26cCcf1DB6772DE953B37B82";
-  const tokenAddress = "0xaA7FC574573a35647240eB5A4e95ec3128A6807A"
+  const registryModuleOwnerCustom = "0x84ad5890A63957C960e0F19b0448A038a574936B";
+  const tokenAdminRegistryAddress = "0x1e73f6842d7afDD78957ac143d1f315404Dd9e5B";
+  const tokenAddress = "0x7b645ecDde6a8Fe8EACfcADb2Cd20E7F20C172f3";
+  const poolAddress = "0xAa2d629080Bb38Ca8438d8798f2aE8f876154e6D";
 
-  const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC);
+  const provider = new ethers.JsonRpcProvider(process.env.AMOY_RPC);
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
   try {
-    console.log("Starting admin claim process...");
-    console.log("claiming admin for token:", tokenAddress);
+  
     await claimAdmin(tokenAddress, registryModuleOwnerCustom, abi, wallet)
-    console.log("Admin claimed, now accepting admin...");
+
     await acceptAdmin(tokenAddress, tokenAdminRegistryAddress, abiTokenAdminRegistry, wallet)
-    console.log("Admin accepted successfully.");
+
+    await setPool(tokenAddress, poolAddress, tokenAdminRegistryAddress, abiTokenAdminRegistry, wallet);
+
   }
 
   catch (error) {
@@ -694,6 +696,19 @@ async function acceptAdmin(tokenAddress, tokenAdminRegistryAddress, abiTokenAdmi
   catch (error) {
     console.error("Error accepting admin:", error);
     return;
+  }
+}
+
+async function setPool(tokenAddress, poolAddress, tokenAdminRegistryAddress, abiTokenAdminRegistry, wallet) {
+  try {
+    console.log("Setting pool for the token...");
+    const adminRegistryModule = new ethers.Contract(tokenAdminRegistryAddress, abiTokenAdminRegistry, wallet);
+    const tx = await adminRegistryModule.setPool(tokenAddress, poolAddress);
+    console.log("Set pool transaction hash:", tx.hash);
+    await tx.wait();
+    console.log("Pool set successfully.");
+  } catch (error) {
+    console.error("Error setting pool:", error);
   }
 }
 

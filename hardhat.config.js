@@ -8,6 +8,10 @@ module.exports = {
     sepolia: {
       url: process.env.SEPOLIA_RPC,
       accounts: [process.env.PRIVATE_KEY],
+    },
+    polygonAmoy: {
+      url: process.env.AMOY_RPC,
+      accounts: [process.env.PRIVATE_KEY],
     }
   },
   etherscan: {

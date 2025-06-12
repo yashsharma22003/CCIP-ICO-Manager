@@ -36,7 +36,7 @@
     // API endpoint to deploy BurnMintERC20 token
     app.post('/deploy-token', async (req, res) => {
       try {
-        const { network, verify } = req.body;
+        const { network, name, symbol, decimals, maxSupply, preMint, verify } = req.body;
 
         // Validate network parameter
         if (!network) {
@@ -48,6 +48,13 @@
           ...process.env, // Inherit parent environment
           // Pass the verification flag to the script
           
+          NAME: name || 'BurnMintToken',
+          SYMBOL: symbol || 'BMT',
+          DECIMALS: decimals || "18",
+          MAX_SUPPLY: maxSupply || '1000000000000000000000',
+          PRE_MINT: preMint ? preMint : '0',
+          
+
           VERIFY_CONTRACT: verify ? "true" : "false",
         };
 
